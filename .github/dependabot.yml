@@ -1,0 +1,92 @@
+# This Dependabot template sets a "cooldown" period on all Prima package ecosystems
+# The cooldown period is a security measure to mitigate Supply Chain attacks
+# TODO: Feel free to update it according to your needs, but make sure to keep the "cooldown" configuration for all (production) ecosystems you use.
+#
+# For more information on how to configure Dependabot, see:
+# https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference
+#
+# If you need to remove non-production security alerts (e.g., development dependencies), please open a PR here:
+# https://github.com/primait/appsec-automation/blob/master/automation/dependabot-auto-triage/configuration.yaml
+#
+# For any doubt, feel free to reach out to the Security Engineering team on Slack at #security
+version: 2
+
+updates:
+  - package-ecosystem: "pip"
+    directories:
+      - "*"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "cargo"
+    directories:
+      - "*"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "docker"
+    directories:
+      - "*"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "gomod"
+    directories:
+      - "*"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "elm"
+    directories:
+      - "*"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "helm"
+    directories:
+      - "*"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "mix"
+    directories:
+      - "*"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "swift"
+    directories:
+      - "*"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: "uv"
+    directories:
+      - "*"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
