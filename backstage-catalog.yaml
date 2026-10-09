@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: spect
+  description: Type specification extensions for Elixir.
+  tags: []
+spec:
+  type: library
+  lifecycle: production
+  owner: group:default/team-developer-experience
+  system: prima.it
