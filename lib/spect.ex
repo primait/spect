@@ -103,7 +103,13 @@ defmodule Spect do
     |> Enum.filter(fn {k, _v, _a} -> k == name end)
     |> case do
       [{^name, type, vars}] ->
-        to_kind!(data, module, type, Enum.zip(vars, args) |> Map.new())
+        params =
+          vars
+          |> Enum.map(fn {:var, _line, name} -> name end)
+          |> Enum.zip(args)
+          |> Map.new()
+
+        to_kind!(data, module, type, params)
 
       _ ->
         raise ArgumentError, "type not found: #{module}.#{name}"
@@ -151,8 +157,8 @@ defmodule Spect do
     to_spec!(data, module, name, params)
   end
 
-  defp to_kind!(data, _module, {:var, _line, _value} = var, params) do
-    {module, type} = Map.fetch!(params, var)
+  defp to_kind!(data, _module, {:var, _line, name}, params) do
+    {module, type} = Map.fetch!(params, name)
     to_kind!(data, module, type, params)
   end
 

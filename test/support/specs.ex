@@ -46,6 +46,12 @@ defmodule Spect.Support.Specs do
 
   @type maybe(p) :: p | nil
   @type maybe_int :: __MODULE__.maybe(integer())
+  @type pair(first, second) :: {
+          first,
+          second,
+          first
+        }
+  @type int_atom_pair :: pair(integer(), atom())
 
   defmodule BasicStruct do
     @moduledoc false
