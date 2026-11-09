@@ -198,9 +198,24 @@ defmodule Spect.Test do
   test "parameterized types" do
     assert to_spec(1234, Specs, :maybe_int) === {:ok, 1234}
     assert to_spec(nil, Specs, :maybe_int) === {:ok, nil}
+    assert {:error, %ConvertError{}} = to_spec("invalid", Specs, :maybe_int)
 
     assert to_spec(%{test: "a"}, Specs.ParameterizedStruct) ===
              {:ok, %Specs.ParameterizedStruct{test: :a}}
+  end
+
+  test "type parameters are resolved independently of source positions" do
+    assert to_spec([1, "atom", 2], Specs, :int_atom_pair) ===
+             {:ok, {1, :atom, 2}}
+
+    assert {:error, %ConvertError{}} =
+             to_spec([1, "atom", "invalid"], Specs, :int_atom_pair)
+
+    assert {:error, %ConvertError{}} =
+             to_spec(["invalid", "atom", 2], Specs, :int_atom_pair)
+
+    assert {:error, %ConvertError{}} =
+             to_spec([1, 2, 3], Specs, :int_atom_pair)
   end
 
   test "user_types" do
