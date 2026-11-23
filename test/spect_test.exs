@@ -36,6 +36,9 @@ defmodule Spect.Test do
     assert to_spec(1, Specs, :literal_1) === {:ok, 1}
     {:error, %ConvertError{}} = to_spec(2, Specs, :literal_1)
 
+    assert to_spec(-1, Specs, :literal_minus_1) === {:ok, -1}
+    {:error, %ConvertError{}} = to_spec(-2, Specs, :literal_minus_1)
+
     assert to_spec([], Specs, :literal_list) === {:ok, []}
     {:error, %ConvertError{}} = to_spec(1, Specs, :literal_list)
 
@@ -181,6 +184,25 @@ defmodule Spect.Test do
 
     assert to_spec!(Specs, Specs, :module_test) == Specs
     {:error, %ConvertError{}} = to_spec("NonExistent", Specs, :module_test)
+  end
+
+  test "dates and naive datetimes" do
+    date = ~D[2022-02-17]
+    datetime = ~N[2022-02-17 11:02:56]
+
+    for {name, value} <- [date_test: date, naivedatetime_test: datetime] do
+      assert to_spec(to_string(value), Specs, name) == {:ok, value}
+      assert to_spec(value, Specs, name) == {:ok, value}
+      assert {:error, %ConvertError{}} = to_spec("invalid", Specs, name)
+      assert {:error, %ConvertError{}} = to_spec(1, Specs, name)
+      assert {:error, %ConvertError{}} = to_spec(%{}, Specs, name)
+    end
+
+    assert to_spec(
+             %{"date" => to_string(date), "datetime" => to_string(datetime)},
+             Specs,
+             :nested_dates
+           ) == {:ok, %{date: date, datetime: datetime}}
   end
 
   test "datetimes" do
