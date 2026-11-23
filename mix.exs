@@ -46,7 +46,8 @@ defmodule Spect.MixProject do
   defp deps do
     [
       {:memoize, "~> 1.3"},
-      {:excoveralls, "~> 0.13", only: :test},
+      {:excoveralls, "~> 0.18.5", only: :test},
+      {:castore, "~> 1.0", only: :test},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false},
       {:benchee, "~> 1.0", only: :dev, runtime: false},
