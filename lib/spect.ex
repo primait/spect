@@ -77,10 +77,10 @@ defmodule Spect do
     {:ok, %{film: "Amadeus", lead?: true}}
     ```
 
-  If any of the nested fields in the typespec is declared as a `DateTime.t()`,
-  `to_spec` will convert the value only if it is an
-  [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) string or already
-  a `DateTime` struct.
+  If any of the nested fields in the typespec is declared as a `Date.t()`,
+  `NaiveDateTime.t()`, or `DateTime.t()`, `to_spec` will convert the value only
+  if it is an [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) string or
+  already a corresponding struct.
   """
   @spec to_spec(data :: any, module :: atom, name :: atom) ::
           {:ok, any} | {:error, any}
@@ -135,11 +135,19 @@ defmodule Spect do
   defp to_kind!(data, module, {:remote_type, _line, type}, _params) do
     [{:atom, _, remote_module}, {:atom, _, name}, args] = type
 
-    if remote_module == DateTime and name == :t do
-      to_datetime!(data)
-    else
-      params = Enum.map(args, &{module, &1})
-      to_spec!(data, remote_module, name, params)
+    cond do
+      remote_module == Date and name == :t ->
+        to_date!(data)
+
+      remote_module == NaiveDateTime and name == :t ->
+        to_naivedatetime!(data)
+
+      remote_module == DateTime and name == :t ->
+        to_datetime!(data)
+
+      true ->
+        params = Enum.map(args, &{module, &1})
+        to_spec!(data, remote_module, name, params)
     end
   end
 
@@ -160,6 +168,10 @@ defmodule Spect do
   defp to_kind!(data, _module, {:var, _line, name}, params) do
     {module, type} = Map.fetch!(params, name)
     to_kind!(data, module, type, params)
+  end
+
+  defp to_kind!(data, _module, {:op, _, :-, {:integer, _, value}}, _params) do
+    to_lit!(data, :integer, -value)
   end
 
   defp to_kind!(data, _module, {kind, _line, value}, _params) do
@@ -531,6 +543,53 @@ defmodule Spect do
   # -------------------------------------------------------------------------
   # miscellaneous types
   # -------------------------------------------------------------------------
+
+  defp to_date!(data) do
+    cond do
+      is_binary(data) ->
+        case Date.from_iso8601(data) do
+          {:ok, date} ->
+            date
+
+          {:error, reason} ->
+            raise(ConvertError, "invalid string format for Date: #{reason}")
+        end
+
+      is_struct(data, Date) ->
+        data
+
+      true ->
+        raise(
+          ConvertError,
+          "expected ISO8601 string or Date struct, found: #{inspect(data)}"
+        )
+    end
+  end
+
+  defp to_naivedatetime!(data) do
+    cond do
+      is_binary(data) ->
+        case NaiveDateTime.from_iso8601(data) do
+          {:ok, datetime} ->
+            datetime
+
+          {:error, reason} ->
+            raise(
+              ConvertError,
+              "invalid string format for NaiveDateTime: #{reason}"
+            )
+        end
+
+      is_struct(data, NaiveDateTime) ->
+        data
+
+      true ->
+        raise(
+          ConvertError,
+          "expected ISO8601 string or NaiveDateTime struct, found: #{inspect(data)}"
+        )
+    end
+  end
 
   defp to_datetime!(data) do
     cond do

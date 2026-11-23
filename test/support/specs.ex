@@ -6,6 +6,7 @@ defmodule Spect.Support.Specs do
   @type literal_true :: true
   @type literal_false :: false
   @type literal_1 :: 1
+  @type literal_minus_1 :: -1
   @type literal_list :: []
   @type literal_map :: %{}
 
@@ -40,7 +41,10 @@ defmodule Spect.Support.Specs do
           optional(:key3) => integer()
         }
 
+  @type date_test :: Date.t()
+  @type naivedatetime_test :: NaiveDateTime.t()
   @type datetime_test :: DateTime.t()
+  @type nested_dates :: %{date: Date.t(), datetime: NaiveDateTime.t()}
 
   @type module_test :: module()
 
